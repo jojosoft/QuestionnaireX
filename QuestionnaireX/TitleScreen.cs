@@ -20,9 +20,9 @@ namespace QuestionnaireX
 {
     public partial class TitleScreen : Form
     {
-        List<DataTable> experimentInputs = new List<DataTable>();
-        ControlPanel controlPanel = new ControlPanel();
+        DataTable currentExperimentInput;
         string lastLoadedInputDirectory;
+        ControlPanel controlPanel = new ControlPanel();
 
         public TitleScreen()
         {
@@ -31,56 +31,24 @@ namespace QuestionnaireX
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Here, the user has the opportunity to load one or more CSV files containing the questionnaire input.
+            // Here, the user has the opportunity to load one CSV file containing the questionnaire input.
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = Directory.GetCurrentDirectory();
             dlg.Filter = "CSV Files (*.csv)|*.csv";
-            dlg.Multiselect = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                experimentInputs.Clear();
-                string errorMessages = "";
-                string loadedFiles = "";
-                foreach (string file in dlg.FileNames)
+                try
                 {
-                    try
-                    {
-                        // Each input is stored as a data table for easier access:
-                        experimentInputs.Add(CsvEngine.CsvToDataTable(file, ';'));
-                        loadedFiles += Path.GetFileName(file) + "\n";
-                    }
-                    catch
-                    {
-                        errorMessages += "Couldn't parse contents of the file located at '" + file + "'.\n";
-                    }
-                }
-                lastLoadedInputDirectory = Path.GetDirectoryName(dlg.FileNames[0]);
-                if (errorMessages.Length > 0 && experimentInputs.Count > 0)
-                {
-                    // At least one file wasn't read in correctly and at least one file was read in correctly, so ask the user what to do:
-                    if (MessageBox.Show(errorMessages + "Would you like to use the remaining files anyway?", "Invalid input files", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) != DialogResult.Yes)
-                    {
-                        Console.WriteLine("The user cancelled loading the selected input files because some of them are invalid.");
-                        experimentInputs.Clear();
-                        button1.BackColor = Color.Tomato;
-                    }
-                    else
-                    {
-                        Console.WriteLine("The user decided to use " + experimentInputs.Count + " of " + dlg.FileName.Length + " input files available because the other files are invalid.");
-                        button1.BackColor = Color.SandyBrown;
-                    }
-                }
-                else if (experimentInputs.Count == 0)
-                {
-                    // All of the input files weren't read in correctly, so show an error message to the user:
-                    MessageBox.Show("None of the input files was valid. Please make sure they're in the CSV format!", "Invalid input files", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Console.WriteLine("All input files are invalid.");
-                    button1.BackColor = Color.Tomato;
-                }
-                else
-                {
-                    MessageBox.Show("Successfully loaded " + experimentInputs.Count.ToString() + " input files in the following order:\n" + loadedFiles, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Try to read from the given input file:
+                    currentExperimentInput = CsvEngine.CsvToDataTable(dlg.FileName, ';');
+                    lastLoadedInputDirectory = Path.GetDirectoryName(dlg.FileName);
+                    MessageBox.Show("Successfully loaded the input file named:\n" + Path.GetFileName(dlg.FileName), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     button1.BackColor = Color.LightGreen;
+                }
+                catch
+                {
+                    MessageBox.Show("Couldn't parse contents of the file located at '" + dlg.FileName + "'.", "Invalid input files", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    button1.BackColor = Color.Tomato;
                 }
             }
         }
@@ -90,86 +58,94 @@ namespace QuestionnaireX
             // Redirect the event if the user clicked on the "START!" label instad on the logo...
             pictureBox1_Click(sender, e);
         }
-        
+
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             // Write the header of the output file:
-            File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqFile\tqBlock\tqSBlock\tqAnswer");
+            File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqAnswer");
             // Start the sequence of questions according to the input file(s) the user loaded beforehand.
             this.Hide();
             // Show the control panel:
             controlPanel.Show();
             controlPanel.SetTimer((int)numericUpDown3.Value);
             // Iterate through all files the experimenter selected
-            for (int i = 0; i < experimentInputs.Count; i++)
+            PrepareDataTable(ref currentExperimentInput);
+            for (int row = 0; row < currentExperimentInput.Rows.Count; row++)
             {
-                DataTable currentFile = experimentInputs[i];
-                PrepareDataTable(ref currentFile);
-                for (int row = 0; row < experimentInputs[i].Rows.Count; row++)
+                DataRow question = currentExperimentInput.Rows[row];
+                // If randomization of sub-blocks is enabled, detect the start of a new sub-block and randomize it!
+                bool newSubBlock = row == 0 || !GetFieldOfRow(row - 1, "Sub_Block_Number").Equals(question["Sub_Block_Number"] as string);
+                bool newBlock = row == 0 || !GetFieldOfRow(row - 1, "Block_Number").Equals(question["Block_Number"] as string);
+                if (checkBox1.Checked && newSubBlock)
                 {
-                    DataRow question = experimentInputs[i].Rows[row];
-                    // If randomization of sub-blocks is enabled, detect the start of a new sub-block and randomize it!
-                    if (checkBox1.Checked)
+                    // The current row is either the first row of the file or the first row of a new sub-block. Randomize it!
+                    DataRow[] subBlock = currentExperimentInput.Select("Sub_Block_Number = '" + GetFieldOfRow(row + 1, "Sub_Block_Number") + "' AND Block_Number = '" + GetFieldOfRow(row + 1, "Block_Number") + "'");
+                    ShuffleDataRows(ref subBlock);
+                }
+
+                // Display the current question to the participant:
+                string answer = "";
+                while (answer == "")
+                {
+                    try
                     {
-                        int totalRowsAmount = experimentInputs[i].Rows.Count;
-                        string thisSubBlock = question["Sub_Block_Number"] as string;
-                        Func<int, string, string> getFieldOfRow = delegate(int rowIndex, string columnName)
+                        // Update the experiment status in the control panel:
+                        controlPanel.UpdateQuestionID(question["ID"] as string);
+                        controlPanel.UpdateBlock(question["Block_Number"] as string);
+                        controlPanel.UpdateSubBlock(question["Sub_Block_Number"] as string);
+                        controlPanel.UpdateSubBlockType(question["Sub_Block_Type"] as string);
+                        // If there are any references in this line of the input file marked with "file:", replace them by the respective file contents.
+                        for (int j = 0; j < question.ItemArray.Length; j++)
                         {
-                            return experimentInputs[i].Rows[rowIndex][columnName] as string;
-                        };
-                        if (row == 0 || !getFieldOfRow(row - 1, "Sub_Block_Number").Equals(thisSubBlock))
-                        {
-                            // The current row is either the first row of the file or the first row of a new sub-block. Randomize it!
-                            DataRow[] subBlock = experimentInputs[i].Select("Sub_Block_Number = '" + getFieldOfRow(row + 1, "Sub_Block_Number") + "' AND Block_Number = '" + getFieldOfRow(row + 1, "Block_Number") + "'");
-                            ShuffleDataRows(ref subBlock);
-                        }
-                    }
-                    // Display the current question to the participant:
-                    string answer = "";
-                    while (answer == "")
-                    {
-                        try
-                        {
-                            // Update the experiment status in the control panel:
-                            controlPanel.UpdateQuestionID(question["ID"] as string);
-                            controlPanel.UpdateBlock(question["Block_Number"] as string);
-                            controlPanel.UpdateSubBlock(question["Sub_Block_Number"] as string);
-                            controlPanel.UpdateSubBlockType(question["Sub_Block_Type"] as string);
-                            // If there are any references in this line of the input file marked with "file:", replace them by the respective file contents.
-                            for (int j = 0; j < question.ItemArray.Length; j++)
+                            string dataCell = question.ItemArray[j] as string;
+                            if (dataCell.StartsWith("file:"))
                             {
-                                string dataCell = question.ItemArray[j] as string;
-                                if (dataCell.StartsWith("file:"))
-                                {
-                                    // The actual question was swapped out to a file, so try to read it:
-                                    question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5));
-                                }
+                                // The actual question was swapped out to a file, so try to read it:
+                                question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5));
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            answer = null;
-                            MessageBox.Show("Something went wrong while collecting all data from the input file!\n\nException message:\n" + ex.Message, "Problem with input file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        try
-                        {
-                            // Show the next question form:
-                            answer = ShowQuestionForm((Form)Activator.CreateInstance(QuestionsIndex.INDEX[question["Type"] as string], question));
-                        }
-                        catch (Exception ex)
-                        {
-                            answer = null;
-                            MessageBox.Show("Must be handled by a programmer:\nThe question form with type " + question["Type"].ToString() + " couldn't be instantiated!\nPlease make sure you've added your new question form to the questions index and read the comments in that class file.\n\nException message:\n" + ex.Message, "Problem with question type", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
                     }
-                    if (answer == null)
+                    catch (Exception ex)
                     {
-                        // The last answer was null, which means that the experimenter aborted the questionnaire.
-                        this.Close();
-                        return;
+                        answer = null;
+                        MessageBox.Show("Something went wrong while collecting all data from the input file!\n\nException message:\n" + ex.Message, "Problem with input file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (i + 1).ToString() + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + answer);
+                    // After the next question would be ready, check if we'd need to take a break before we continue...
+                    if (newSubBlock && checkBox3.Checked || newBlock && checkBox2.Checked)
+                    {
+                        BreakScreen bs = new BreakScreen();
+                        controlPanel.SetCurrentQuestionForm(bs);
+                        controlPanel.Show();
+                        bs.ShowDialog();
+                        if (bs.DialogResult == DialogResult.Abort)
+                        {
+                            // The experimenter ended the questionnaire during the pasue screen! Close this form and return.
+                            this.Close();
+                            return;
+                        }
+                        if (checkBox4.Checked)
+                        {
+                            controlPanel.Hide();
+                        }
+                    }
+                    try
+                    {
+                        // Show the next question form:
+                        answer = ShowQuestionForm((Form)Activator.CreateInstance(QuestionsIndex.INDEX[question["Type"] as string], question));
+                    }
+                    catch (Exception ex)
+                    {
+                        answer = null;
+                        MessageBox.Show("Must be handled by a programmer:\nThe question form with type " + question["Type"].ToString() + " couldn't be instantiated!\nPlease make sure you've added your new question form to the questions index and read the comments in that class file.\n\nException message:\n" + ex.Message, "Problem with question type", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
+                if (answer == null)
+                {
+                    // The last answer was null, which means that the experimenter aborted the questionnaire.
+                    this.Close();
+                    return;
+                }
+                File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + answer);
             }
             controlPanel.Close();
             this.Close();
@@ -226,6 +202,17 @@ namespace QuestionnaireX
                     rows[k].ItemArray = tmp;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets a specific data cell from the current input file.
+        /// </summary>
+        /// <param name="rowIndex">The index of the row you're interested in.</param>
+        /// <param name="columnName">The name of the column you're interested in. Be aware that spaces need to be replaced by underscores!</param>
+        /// <returns></returns>
+        private string GetFieldOfRow(int rowIndex, string columnName)
+        {
+            return currentExperimentInput.Rows[rowIndex][columnName] as string;
         }
 
         /// <summary>

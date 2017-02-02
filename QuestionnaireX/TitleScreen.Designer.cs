@@ -42,14 +42,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -65,7 +65,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(258, 37);
             this.button1.TabIndex = 0;
-            this.button1.Text = "Load one or more experiment files";
+            this.button1.Text = "Load the questionnaire file";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -216,6 +216,34 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Parameters for the questionnaire";
             // 
+            // checkBox4
+            // 
+            this.checkBox4.AutoSize = true;
+            this.checkBox4.Checked = true;
+            this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox4.Location = new System.Drawing.Point(9, 128);
+            this.checkBox4.Name = "checkBox4";
+            this.checkBox4.Size = new System.Drawing.Size(192, 20);
+            this.checkBox4.TabIndex = 14;
+            this.checkBox4.Text = "Hide control panel off-break";
+            this.toolTip1.SetToolTip(this.checkBox4, "If checked, a pause screen will be shown between blocks. (Not between sub-blocks!" +
+        ")\r\nOtherwise, the trials are processed in one go.");
+            this.checkBox4.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Checked = true;
+            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox3.Location = new System.Drawing.Point(9, 103);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(222, 20);
+            this.checkBox3.TabIndex = 13;
+            this.checkBox3.Text = "Small break between sub-blocks";
+            this.toolTip1.SetToolTip(this.checkBox3, "If checked, a pause screen will be shown between blocks. (Not between sub-blocks!" +
+        ")\r\nOtherwise, the trials are processed in one go.");
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
@@ -283,34 +311,6 @@
             this.label5.Text = "START!";
             this.toolTip1.SetToolTip(this.label5, "Click here to start the questionnaire!");
             this.label5.Click += new System.EventHandler(this.label5_Click);
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Checked = true;
-            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox3.Location = new System.Drawing.Point(9, 103);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(222, 20);
-            this.checkBox3.TabIndex = 13;
-            this.checkBox3.Text = "Small break between sub-blocks";
-            this.toolTip1.SetToolTip(this.checkBox3, "If checked, a pause screen will be shown between blocks. (Not between sub-blocks!" +
-        ")\r\nOtherwise, the trials are processed in one go.");
-            this.checkBox3.UseVisualStyleBackColor = true;
-            // 
-            // checkBox4
-            // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Checked = true;
-            this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox4.Location = new System.Drawing.Point(9, 128);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(192, 20);
-            this.checkBox4.TabIndex = 14;
-            this.checkBox4.Text = "Hide control panel off-break";
-            this.toolTip1.SetToolTip(this.checkBox4, "If checked, a pause screen will be shown between blocks. (Not between sub-blocks!" +
-        ")\r\nOtherwise, the trials are processed in one go.");
-            this.checkBox4.UseVisualStyleBackColor = true;
             // 
             // TitleScreen
             // 
