@@ -52,18 +52,31 @@ namespace QuestionnaireX
             this.currentQuestionForm = newQuestionForm;
         }
 
-        public void StartTimer(int seconds, bool waitForConfirmation = false)
+        public void SetTimer(int seconds)
         {
             timeRemaining = seconds;
             DisplayRemainingTime();
-            if (waitForConfirmation)
-            {
-                button2.Enabled = true;
-            }
-            else
-            {
-                timer1.Start();
-            }
+            numericUpDown1.Value = seconds;
+        }
+
+        public void UpdateQuestionID(string id)
+        {
+            labelQuestion.Text = id;
+        }
+
+        public void UpdateBlock(string block)
+        {
+            labelBlock.Text = block;
+        }
+
+        public void UpdateSubBlock(string subBlock)
+        {
+            labelSubBlock.Text = subBlock;
+        }
+
+        public void UpdateSubBlockType(string subBlockType)
+        {
+            labelSubBlockType.Text = "(" + subBlockType + ")";
         }
 
         private void DisplayRemainingTime()
@@ -71,24 +84,44 @@ namespace QuestionnaireX
             label1.Text = String.Format("{0}:{1}", (timeRemaining / 60).ToString("D2"), (timeRemaining % 60).ToString("D2"));
         }
 
+        private void StartTimer()
+        {
+            button2.Text = "PAUSE TIMER";
+            timer1.Start();
+        }
+        
+        private void StopTimer()
+        {
+            button2.Text = "START TIMER";
+            timer1.Stop();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            if (currentQuestionForm != null && MessageBox.Show("Do you really want to quit the questionnaire?\nThe progress until now will be saved but you won't be able to directly start again from where you left after exiting the questionnaire.", "Quit?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                timer1.Stop();
-                currentQuestionForm.DialogResult = DialogResult.Abort;
-                currentQuestionForm.Close();
-            }
+            this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // The experimenter manually started the timer.
+            // The experimenter wants to start or stop the timer.
             if (timeRemaining > 0)
             {
-                button2.Enabled = false;
-                timer1.Start();
+                if (timer1.Enabled)
+                {
+                    StopTimer();
+                }
+                else
+                {
+                    StartTimer();
+                }
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            // Reset the timer to the given start time:
+            StopTimer();
+            SetTimer((int)numericUpDown1.Value);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -98,8 +131,27 @@ namespace QuestionnaireX
             DisplayRemainingTime();
             if (timeRemaining == 0)
             {
-                timer1.Stop();
+                StopTimer();
                 beep.Play();
+            }
+        }
+
+        private void ControlPanel_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Hide();
+            if (MessageBox.Show(this, "Do you really want to quit the questionnaire?\nThe progress until now will be saved but you won't be able to directly start again from where you left after exiting the questionnaire.", "Quit?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                StopTimer();
+                if (currentQuestionForm != null)
+                {
+                    currentQuestionForm.DialogResult = DialogResult.Abort;
+                    currentQuestionForm.Close();
+                }
+            }
+            else
+            {
+                this.Show();
+                e.Cancel = true;
             }
         }
     }

@@ -25,7 +25,7 @@ namespace QuestionnaireX
         /// </summary>
         /// <param name="rawQuestionData">A row representing the question this question form should display.</param>
         public Slider(DataRow rawQuestionData)
-            : this(rawQuestionData["Question"] as string, rawQuestionData["Descriptor_Min"] as string, rawQuestionData["Descriptor_Min"] as string, int.Parse(rawQuestionData["Min"] as string), int.Parse(rawQuestionData["Max"] as string))
+            : this(rawQuestionData["Question"] as string, rawQuestionData["Descriptor_Min"] as string, rawQuestionData["Descriptor_Max"] as string, int.Parse(rawQuestionData["Min"] as string), int.Parse(rawQuestionData["Max"] as string))
         { }
         
         /// <summary>
