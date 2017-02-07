@@ -62,12 +62,11 @@ namespace QuestionnaireX
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             // Write the header of the output file:
-            File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqAnswer");
+            File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBlType\tqAnswer");
             // Start the sequence of questions according to the input file(s) the user loaded beforehand.
             this.Hide();
             // Show the control panel:
             controlPanel.Show();
-            controlPanel.SetTimer((int)numericUpDown3.Value);
             // Iterate through all files the experimenter selected
             PrepareDataTable(ref currentExperimentInput);
             for (int row = 0; row < currentExperimentInput.Rows.Count; row++)
@@ -82,61 +81,67 @@ namespace QuestionnaireX
                     DataRow[] subBlock = currentExperimentInput.Select("Sub_Block_Number = '" + GetFieldOfRow(row + 1, "Sub_Block_Number") + "' AND Block_Number = '" + GetFieldOfRow(row + 1, "Block_Number") + "'");
                     ShuffleDataRows(ref subBlock);
                 }
-
+                // Prepare the control panel and the raw data for the next question:
+                try
+                {
+                    // Update the experiment status in the control panel:
+                    controlPanel.UpdateQuestionID(question["ID"] as string);
+                    controlPanel.UpdateBlock(question["Block_Number"] as string);
+                    controlPanel.UpdateSubBlock(question["Sub_Block_Number"] as string);
+                    controlPanel.UpdateSubBlockType(question["Sub_Block_Type"] as string);
+                    // If there are any references in this line of the input file marked with "file:", replace them by the respective file contents.
+                    for (int j = 0; j < question.ItemArray.Length; j++)
+                    {
+                        string dataCell = question.ItemArray[j] as string;
+                        if (dataCell.StartsWith("file:"))
+                        {
+                            // The actual question was swapped out to a file, so try to read it:
+                            question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Something went wrong while collecting all data from the input file!\nMake sure that file references are stated using relative paths from the input file (separator '/', paths without leading '/') and that the input file has all neccessary columns...\n\nException message:\n" + ex.Message, "Problem with input file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                    return;
+                }
+                // After the next question would be ready, check if we'd need to take a break before we continue...
+                if (newSubBlock && checkBox3.Checked || newBlock && checkBox2.Checked)
+                {
+                    BreakScreen bs = new BreakScreen();
+                    controlPanel.SetCurrentQuestionForm(bs);
+                    controlPanel.Show();
+                    bs.ShowDialog();
+                    if (bs.DialogResult == DialogResult.Abort)
+                    {
+                        // The experimenter ended the questionnaire during the pasue screen! Close this form and return.
+                        this.Close();
+                        return;
+                    }
+                    if (checkBox4.Checked)
+                    {
+                        controlPanel.Hide();
+                    }
+                }
                 // Display the current question to the participant:
                 string answer = "";
                 while (answer == "")
                 {
                     try
                     {
-                        // Update the experiment status in the control panel:
-                        controlPanel.UpdateQuestionID(question["ID"] as string);
-                        controlPanel.UpdateBlock(question["Block_Number"] as string);
-                        controlPanel.UpdateSubBlock(question["Sub_Block_Number"] as string);
-                        controlPanel.UpdateSubBlockType(question["Sub_Block_Type"] as string);
-                        // If there are any references in this line of the input file marked with "file:", replace them by the respective file contents.
-                        for (int j = 0; j < question.ItemArray.Length; j++)
-                        {
-                            string dataCell = question.ItemArray[j] as string;
-                            if (dataCell.StartsWith("file:"))
-                            {
-                                // The actual question was swapped out to a file, so try to read it:
-                                question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5));
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        answer = null;
-                        MessageBox.Show("Something went wrong while collecting all data from the input file!\n\nException message:\n" + ex.Message, "Problem with input file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    // After the next question would be ready, check if we'd need to take a break before we continue...
-                    if (newSubBlock && checkBox3.Checked || newBlock && checkBox2.Checked)
-                    {
-                        BreakScreen bs = new BreakScreen();
-                        controlPanel.SetCurrentQuestionForm(bs);
-                        controlPanel.Show();
-                        bs.ShowDialog();
-                        if (bs.DialogResult == DialogResult.Abort)
-                        {
-                            // The experimenter ended the questionnaire during the pasue screen! Close this form and return.
-                            this.Close();
-                            return;
-                        }
-                        if (checkBox4.Checked)
-                        {
-                            controlPanel.Hide();
-                        }
-                    }
-                    try
-                    {
-                        // Show the next question form:
+                        // Show the current question form:
                         answer = ShowQuestionForm((Form)Activator.CreateInstance(QuestionsIndex.INDEX[question["Type"] as string], question));
                     }
                     catch (Exception ex)
                     {
                         answer = null;
                         MessageBox.Show("Must be handled by a programmer:\nThe question form with type " + question["Type"].ToString() + " couldn't be instantiated!\nPlease make sure you've added your new question form to the questions index and read the comments in that class file.\n\nException message:\n" + ex.Message, "Problem with question type", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    if (answer == "" && checkBox4.Checked && !controlPanel.Visible && MessageBox.Show("The control panel needs to be hidden during the questioning.\nAre you the experimenter AND do you want to show the control panel?", "Show control panel?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        // The user wants to end the experiment and show the control panel again.
+                        controlPanel.Show();
                     }
                 }
                 if (answer == null)
@@ -145,7 +150,7 @@ namespace QuestionnaireX
                     this.Close();
                     return;
                 }
-                File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + answer);
+                File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer);
             }
             controlPanel.Close();
             this.Close();

@@ -46,8 +46,6 @@
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -55,7 +53,6 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -206,8 +203,6 @@
             this.groupBox2.Controls.Add(this.checkBox3);
             this.groupBox2.Controls.Add(this.checkBox2);
             this.groupBox2.Controls.Add(this.checkBox1);
-            this.groupBox2.Controls.Add(this.numericUpDown3);
-            this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(276, 126);
             this.groupBox2.Name = "groupBox2";
@@ -221,13 +216,12 @@
             this.checkBox4.AutoSize = true;
             this.checkBox4.Checked = true;
             this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox4.Location = new System.Drawing.Point(9, 128);
+            this.checkBox4.Location = new System.Drawing.Point(6, 96);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(192, 20);
             this.checkBox4.TabIndex = 14;
             this.checkBox4.Text = "Hide control panel off-break";
-            this.toolTip1.SetToolTip(this.checkBox4, "If checked, a pause screen will be shown between blocks. (Not between sub-blocks!" +
-        ")\r\nOtherwise, the trials are processed in one go.");
+            this.toolTip1.SetToolTip(this.checkBox4, resources.GetString("checkBox4.ToolTip"));
             this.checkBox4.UseVisualStyleBackColor = true;
             // 
             // checkBox3
@@ -235,13 +229,14 @@
             this.checkBox3.AutoSize = true;
             this.checkBox3.Checked = true;
             this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox3.Location = new System.Drawing.Point(9, 103);
+            this.checkBox3.Location = new System.Drawing.Point(6, 71);
             this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(222, 20);
+            this.checkBox3.Size = new System.Drawing.Size(231, 20);
             this.checkBox3.TabIndex = 13;
-            this.checkBox3.Text = "Small break between sub-blocks";
-            this.toolTip1.SetToolTip(this.checkBox3, "If checked, a pause screen will be shown between blocks. (Not between sub-blocks!" +
-        ")\r\nOtherwise, the trials are processed in one go.");
+            this.checkBox3.Text = "Take a break between sub-blocks";
+            this.toolTip1.SetToolTip(this.checkBox3, "If checked, a pause screen will be shown between sub-blocks.\r\nOtherwise, the paus" +
+        "e screen will only show up between blocks if you enabled that. If not, no pause " +
+        "screen will be shown at all.");
             this.checkBox3.UseVisualStyleBackColor = true;
             // 
             // checkBox2
@@ -249,13 +244,14 @@
             this.checkBox2.AutoSize = true;
             this.checkBox2.Checked = true;
             this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(9, 78);
+            this.checkBox2.Location = new System.Drawing.Point(6, 46);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(205, 20);
             this.checkBox2.TabIndex = 12;
             this.checkBox2.Text = "Take a break between blocks";
-            this.toolTip1.SetToolTip(this.checkBox2, "If checked, a pause screen will be shown between blocks. (Not between sub-blocks!" +
-        ")\r\nOtherwise, the trials are processed in one go.");
+            this.toolTip1.SetToolTip(this.checkBox2, "If checked, a pause screen will be shown between blocks.\r\nOtherwise, the pause sc" +
+        "reen will not show up between blocks if you disabled it between sub-blocks, too." +
+        "");
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // checkBox1
@@ -263,42 +259,13 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(9, 53);
+            this.checkBox1.Location = new System.Drawing.Point(6, 21);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(165, 20);
+            this.checkBox1.Size = new System.Drawing.Size(200, 20);
             this.checkBox1.TabIndex = 11;
-            this.checkBox1.Text = "Randomize sub-blocks";
-            this.toolTip1.SetToolTip(this.checkBox1, "If checked, each sub-block will be randomized during runtime, so the input file w" +
-        "on\'t be modified.\r\nOtherwise, the application will follow the sequence of trials" +
-        " defined by the input file.");
+            this.checkBox1.Text = "Randomize within sub-blocks";
+            this.toolTip1.SetToolTip(this.checkBox1, resources.GetString("checkBox1.ToolTip"));
             this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // numericUpDown3
-            // 
-            this.numericUpDown3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown3.Location = new System.Drawing.Point(168, 24);
-            this.numericUpDown3.Maximum = new decimal(new int[] {
-            5999,
-            0,
-            0,
-            0});
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(80, 22);
-            this.numericUpDown3.TabIndex = 10;
-            this.numericUpDown3.Value = new decimal(new int[] {
-            70,
-            0,
-            0,
-            0});
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 26);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(111, 16);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Timer in seconds";
             // 
             // label5
             // 
@@ -335,7 +302,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -358,8 +324,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.CheckBox checkBox3;

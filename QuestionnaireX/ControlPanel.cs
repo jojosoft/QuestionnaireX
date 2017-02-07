@@ -27,6 +27,7 @@ namespace QuestionnaireX
         {
             InitializeComponent();
             beep = new SoundPlayer(Properties.Resources.BEEP);
+            SetTimer((int)numericUpDown1.Value);
         }
 
         #region KeepingWindowEnabledDuringShowDialog
