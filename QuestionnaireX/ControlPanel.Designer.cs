@@ -37,6 +37,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.labelSubBlockType = new System.Windows.Forms.Label();
             this.labelSubBlock = new System.Windows.Forms.Label();
             this.labelBlock = new System.Windows.Forms.Label();
             this.labelQuestion = new System.Windows.Forms.Label();
@@ -44,7 +45,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.labelSubBlockType = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -128,6 +128,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Experiment Status";
             // 
+            // labelSubBlockType
+            // 
+            this.labelSubBlockType.AutoSize = true;
+            this.labelSubBlockType.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSubBlockType.Location = new System.Drawing.Point(159, 107);
+            this.labelSubBlockType.Name = "labelSubBlockType";
+            this.labelSubBlockType.Size = new System.Drawing.Size(21, 29);
+            this.labelSubBlockType.TabIndex = 6;
+            this.labelSubBlockType.Text = "-";
+            // 
             // labelSubBlock
             // 
             this.labelSubBlock.AutoSize = true;
@@ -206,16 +216,6 @@
             0,
             0});
             // 
-            // labelSubBlockType
-            // 
-            this.labelSubBlockType.AutoSize = true;
-            this.labelSubBlockType.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelSubBlockType.Location = new System.Drawing.Point(159, 107);
-            this.labelSubBlockType.Name = "labelSubBlockType";
-            this.labelSubBlockType.Size = new System.Drawing.Size(21, 29);
-            this.labelSubBlockType.TabIndex = 6;
-            this.labelSubBlockType.Text = "-";
-            // 
             // ControlPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -234,6 +234,7 @@
             this.Name = "ControlPanel";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "QuestionnaireX - ControlPanel";
+            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ControlPanel_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

@@ -62,11 +62,27 @@ namespace QuestionnaireX
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             // Write the header of the output file:
-            File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBlType\tqAnswer");
+            Directory.CreateDirectory("Output");
+            File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBlType\tqAnswer");
             // Start the sequence of questions according to the input file(s) the user loaded beforehand.
             this.Hide();
+            // If requested, cover the background with a black form:
+            if (checkBox5.Checked)
+            {
+                Form background = new Form();
+                background.BackColor = Color.Black;
+                background.FormBorderStyle = FormBorderStyle.None;
+                background.TopMost = true;
+                background.Top = 0;
+                background.Left = 0;
+                background.Width = Screen.PrimaryScreen.Bounds.Width;
+                background.Height = Screen.PrimaryScreen.Bounds.Height;
+                background.Show();
+                background.SendToBack();
+            }
             // Show the control panel:
             controlPanel.Show();
+            //controlPanel.BringToFront();
             // Iterate through all files the experimenter selected
             PrepareDataTable(ref currentExperimentInput);
             for (int row = 0; row < currentExperimentInput.Rows.Count; row++)
@@ -150,8 +166,10 @@ namespace QuestionnaireX
                     this.Close();
                     return;
                 }
-                File.AppendAllText("../../../" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer);
+                File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer);
             }
+            controlPanel.SetRunning(false);
+            MessageBox.Show("Thanks for participating in the experiment!", "Done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             controlPanel.Close();
             this.Close();
         }

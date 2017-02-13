@@ -22,12 +22,14 @@ namespace QuestionnaireX
         private Form currentQuestionForm;
         private int timeRemaining = 0;
         private SoundPlayer beep;
+        private bool running;
 
         public ControlPanel()
         {
             InitializeComponent();
             beep = new SoundPlayer(Properties.Resources.BEEP);
             SetTimer((int)numericUpDown1.Value);
+            running = true;
         }
 
         #region KeepingWindowEnabledDuringShowDialog
@@ -58,6 +60,11 @@ namespace QuestionnaireX
             timeRemaining = seconds;
             DisplayRemainingTime();
             numericUpDown1.Value = seconds;
+        }
+
+        public void SetRunning(bool running)
+        {
+            this.running = running;
         }
 
         public void UpdateQuestionID(string id)
@@ -139,6 +146,11 @@ namespace QuestionnaireX
 
         private void ControlPanel_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!this.running)
+            {
+                // If the experiment is not running anymore, do not ask the experimenter if they want to close it...
+                return;
+            }
             this.Hide();
             if (MessageBox.Show(this, "Do you really want to quit the questionnaire?\nThe progress until now will be saved but you won't be able to directly start again from where you left after exiting the questionnaire.", "Quit?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {

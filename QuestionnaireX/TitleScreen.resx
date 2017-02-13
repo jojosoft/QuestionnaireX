@@ -125,9 +125,10 @@
 To start the questionnaire for a specific experiment, just fill in the forms regarding the participant's information and load the input file.
 Then, click on the QX logo to start.</value>
   </data>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
+  <data name="checkBox5.ToolTip" xml:space="preserve">
+    <value>If checked, the application will instantiate a black background form that covers all other windows, so the participant will not be distracted by them.
+Otherwise, the questions and the control panel will just be shown in front of all other windows without using a background.</value>
+  </data>
   <data name="checkBox4.ToolTip" xml:space="preserve">
     <value>If checked, the control panel will be hidden during the questioning and only be shown during breaks.
 Otherwise, the control panel is always visible.

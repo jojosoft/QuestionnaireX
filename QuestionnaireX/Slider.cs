@@ -67,6 +67,11 @@ namespace QuestionnaireX
             label1.Text = trackBar1.Value.ToString();
         }
 
+        private void trackVolume_MouseDown(object sender, MouseEventArgs e)
+        {
+            trackBar1.Value = trackBar1.Minimum + (int)Math.Round(e.X / (float)trackBar1.Width * (trackBar1.Maximum - trackBar1.Minimum));
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             // Once the user finished thinking about the question and tweaking the slider, just close this form again.
