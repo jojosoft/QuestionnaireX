@@ -61,6 +61,11 @@ namespace QuestionnaireX
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            if (lastLoadedInputDirectory == null)
+            {
+                MessageBox.Show("Please load an input file before starting the questionnaire!", "No file loaded", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
             // Write the header of the output file:
             Directory.CreateDirectory("Output");
             File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBlType\tqAnswer");
@@ -82,12 +87,16 @@ namespace QuestionnaireX
             }
             // Show the control panel:
             controlPanel.Show();
-            //controlPanel.BringToFront();
             // Iterate through all files the experimenter selected
             PrepareDataTable(ref currentExperimentInput);
             for (int row = 0; row < currentExperimentInput.Rows.Count; row++)
             {
                 DataRow question = currentExperimentInput.Rows[row];
+                // Trim all data cells to get rid of any whitespaces before or after the value itself:
+                for (int i = 0; i < question.ItemArray.Length; i++)
+                {
+                    question[i] = (question[i] as string).Trim();
+                }
                 // If randomization of sub-blocks is enabled, detect the start of a new sub-block and randomize it!
                 bool newSubBlock = row == 0 || !GetFieldOfRow(row - 1, "Sub_Block_Number").Equals(question["Sub_Block_Number"] as string);
                 bool newBlock = row == 0 || !GetFieldOfRow(row - 1, "Block_Number").Equals(question["Block_Number"] as string);
