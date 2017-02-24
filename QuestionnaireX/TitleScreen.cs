@@ -68,7 +68,7 @@ namespace QuestionnaireX
             }
             // Write the header of the output file:
             Directory.CreateDirectory("Output");
-            File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBlType\tqAnswer");
+            File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBlType\tqAnswer\ttimestampUTC\tanswerTimeMs");
             // Start the sequence of questions according to the input file(s) the user loaded beforehand.
             this.Hide();
             // If requested, cover the background with a black form:
@@ -151,6 +151,7 @@ namespace QuestionnaireX
                 }
                 // Display the current question to the participant:
                 string answer = "";
+                DateTime startTime = DateTime.Now;
                 while (answer == "")
                 {
                     try
@@ -161,7 +162,7 @@ namespace QuestionnaireX
                     catch (Exception ex)
                     {
                         answer = null;
-                        MessageBox.Show("Must be handled by a programmer:\nThe question form with type " + question["Type"].ToString() + " couldn't be instantiated!\nPlease make sure you've added your new question form to the questions index and read the comments in that class file.\n\nException message:\n" + ex.Message, "Problem with question type", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("The question form with type " + question["Type"].ToString() + " couldn't be instantiated!\nPlease make sure you've added your new question form to the questions index and read the comments in that class file.\n\nException message:\n" + ex.Message, "Problem with creating question", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     if (answer == "" && checkBox4.Checked && !controlPanel.Visible && MessageBox.Show("The control panel needs to be hidden during the questioning.\nAre you the experimenter AND do you want to show the control panel?", "Show control panel?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
@@ -175,7 +176,7 @@ namespace QuestionnaireX
                     this.Close();
                     return;
                 }
-                File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer);
+                File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer + "\t" + ((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString() + "\t" + ((Int32)(DateTime.Now - startTime).TotalMilliseconds).ToString());
             }
             controlPanel.SetRunning(false);
             MessageBox.Show("Thanks for participating in the experiment!", "Done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
