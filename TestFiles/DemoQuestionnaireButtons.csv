@@ -1,0 +1,5 @@
+Block Number;Sub Block Number;Sub Block Type;ID;Question;Type;Answers
+
+1;1;TestSub1;1;file:Questions/testQuestionB1.txt;Buttons;1:ID 1,2:ID 2,3:ID 3
+1;1;TestSub1;2;file:Questions/testQuestionB2.txt;Buttons; 5 : ID 5 , 4 : ID 4 , 3 : ID 3 , 2 : ID 2 , 1 : ID 1
+1;1;TestSub1;3;file:Questions/testQuestionB3.txt;Buttons; 1 : ID 1 , 2 : ID 2 , 3 : ID 3 , 4 : ID 4 , 5 : ID 5 , 6 : ID 6 , 7 : ID 7 , 8 : ID 8 , 9 : ID 9 , 10 : ID 10

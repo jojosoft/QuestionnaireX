@@ -36,8 +36,7 @@ namespace QuestionnaireX
         /// <param name="descriptorMax">The description for the user of what the maximum value means.</param>
         /// <param name="minimumSliderValue">The minimum value the user can select using the slider.</param>
         /// <param name="maximumSliderValue">The maximum value the user can select using the slider.</param>
-        /// <param name="startValue">An optional parameter for supplying a value that the slider should be initially set to.</param>
-        public Slider(string question, string descriptorMin, string descriptorMax, int minimumSliderValue, int maximumSliderValue, int startValue = 0)
+        public Slider(string question, string descriptorMin, string descriptorMax, int minimumSliderValue, int maximumSliderValue)
         {
             InitializeComponent();
             // Display the given question using the rich text box:
@@ -48,16 +47,8 @@ namespace QuestionnaireX
             // Set the minimum and maximum of the trackbar to the given values:
             trackBar1.Minimum = minimumSliderValue;
             trackBar1.Maximum = maximumSliderValue;
-            // Set the slider to the start value and update the label the first time:
-            if (startValue >= minimumSliderValue && startValue <= maximumSliderValue)
-            {
-                trackBar1.Value = startValue;
-            }
-            else
-            {
-                Console.WriteLine("The start value for the slider was not inside the given range. Using average by integer division as start value.");
-                trackBar1.Value = minimumSliderValue + (maximumSliderValue - minimumSliderValue) / 2;
-            }
+            // Set the slider to between the start and end value and update the label the first time:
+            trackBar1.Value = minimumSliderValue + (maximumSliderValue - minimumSliderValue) / 2;
             trackBar1_ValueChanged(this, null);
         }
 
