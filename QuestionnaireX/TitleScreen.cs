@@ -110,7 +110,7 @@ namespace QuestionnaireX
             }
             // Write the header of the output file:
             Directory.CreateDirectory("Output");
-            File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBlType\tqAnswer\ttimestampUTC\tanswerTimeMs");
+            File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBType\tqAnswer\ttimestampUTC\tanswerTimeMs");
             // Start the sequence of questions according to the input file(s) the user loaded beforehand.
             this.Hide();
             // If requested, cover the background with a black form:
@@ -134,10 +134,10 @@ namespace QuestionnaireX
             for (int row = 0; row < currentExperimentInput.Rows.Count; row++)
             {
                 DataRow question = currentExperimentInput.Rows[row];
-                // Trim all data cells to get rid of any whitespaces before or after the value itself:
+                // Trim all data cells to get rid of any whitespaces before or after the value itself and correct the encoding to UTF-8 for German special chars:
                 for (int i = 0; i < question.ItemArray.Length; i++)
                 {
-                    question[i] = (question[i] as string).Trim();
+                    question[i] = Encoding.UTF8.GetString(Encoding.Default.GetBytes((question[i] as string).Trim()));
                 }
                 // If randomization of sub-blocks is enabled, detect the start of a new sub-block and randomize it!
                 bool newSubBlock = row == 0 || !GetFieldOfRow(row - 1, "Sub_Block_Number").Equals(question["Sub_Block_Number"] as string);
@@ -163,7 +163,7 @@ namespace QuestionnaireX
                         if (dataCell.StartsWith("file:"))
                         {
                             // The actual question was swapped out to a file, so try to read it:
-                            question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5));
+                            question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5), Encoding.UTF7);
                         }
                     }
                 }
@@ -221,7 +221,7 @@ namespace QuestionnaireX
                 File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "\r\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer + "\t" + ((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString() + "\t" + ((Int32)(DateTime.Now - startTime).TotalMilliseconds).ToString());
             }
             controlPanel.SetRunning(false);
-            MessageBox.Show("Thanks for participating in the experiment!", "Done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Thank you for participating in this questionnaire!", "Done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             controlPanel.Close();
             this.Close();
         }
