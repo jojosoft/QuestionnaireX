@@ -20,13 +20,41 @@ namespace QuestionnaireX
 {
     public partial class TitleScreen : Form
     {
-        DataTable currentExperimentInput;
-        string lastLoadedInputDirectory;
-        ControlPanel controlPanel = new ControlPanel();
+        private DataTable currentExperimentInput;
+        private string lastLoadedInputDirectory;
+        private ControlPanel controlPanel = new ControlPanel();
 
         public TitleScreen()
         {
             InitializeComponent();
+            // If an configuration file exists, try to load it:
+            if (Directory.Exists(dataFolderPath) && File.Exists(configFilePath))
+            {
+                try
+                {
+                    bool[] configuration = File.ReadAllLines(configFilePath).Select(str => str.ToLower().Equals("true")).ToArray();
+                    List<CheckBox> checkBoxes = GetAllCheckboxes();
+                    if (configuration.Length != checkBoxes.Count)
+                    {
+                        // This indicates that the configuration file might be out of date, so don't use it.
+                        if (File.Exists(configFilePath + ".old"))
+                        {
+                            File.Delete(configFilePath + ".old");
+                        }
+                        File.Move(configFilePath, configFilePath + ".old");
+                        File.AppendAllText(dataFolderPath + Path.DirectorySeparatorChar + "log.txt", DateTime.Now.ToString() + ": Tried to read config file. But for " + checkBoxes.Count + " checkboxes, there have been found " + configuration.Length + " values. This indicates that the config file is out of date or has been modified, so it got renamed.\r\n");
+                    }
+                    else
+                    {
+                        // Load the last configuration:
+                        for (int i = 0; i < configuration.Length; i++)
+                        {
+                            checkBoxes[i].Checked = configuration[i];
+                        }
+                    }
+                }
+                catch { }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -65,6 +93,20 @@ namespace QuestionnaireX
             {
                 MessageBox.Show("Please load an input file before starting the questionnaire!", "No file loaded", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
+            }
+            // Store the current configuration in the config file:
+            if (!Directory.Exists(dataFolderPath))
+            {
+                Directory.CreateDirectory(dataFolderPath);
+            }
+            else if (File.Exists(configFilePath))
+            {
+                File.Delete(configFilePath);
+            }
+            List<CheckBox> checkBoxes = GetAllCheckboxes();
+            for (int i = 0; i < checkBoxes.Count; i++)
+            {
+                File.AppendAllLines(configFilePath, new string[] { checkBoxes[i].Checked.ToString() });
             }
             // Write the header of the output file:
             Directory.CreateDirectory("Output");
@@ -176,12 +218,25 @@ namespace QuestionnaireX
                     this.Close();
                     return;
                 }
-                File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer + "\t" + ((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString() + "\t" + ((Int32)(DateTime.Now - startTime).TotalMilliseconds).ToString());
+                File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "\r\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer + "\t" + ((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString() + "\t" + ((Int32)(DateTime.Now - startTime).TotalMilliseconds).ToString());
             }
             controlPanel.SetRunning(false);
             MessageBox.Show("Thanks for participating in the experiment!", "Done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             controlPanel.Close();
             this.Close();
+        }
+
+        private List<CheckBox> GetAllCheckboxes()
+        {
+            List<CheckBox> result = new List<CheckBox>();
+            int i = 1;
+            Control[] searchResult;
+            while ((searchResult = Controls.Find("checkBox" + i.ToString(), true)).Length > 0)
+            {
+                result.Add(searchResult[0] as CheckBox);
+                i++;
+            }
+            return result;
         }
 
         /// <summary>
@@ -269,6 +324,22 @@ namespace QuestionnaireX
                 return null;
             }
             return result;
+        }
+
+        public static string dataFolderPath
+        {
+            get
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + Path.DirectorySeparatorChar + "QuestionnaireX";
+            }
+        }
+
+        public static string configFilePath
+        {
+            get
+            {
+                return dataFolderPath + Path.DirectorySeparatorChar + "config";
+            }
         }
     }
 }
