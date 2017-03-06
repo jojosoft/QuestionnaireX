@@ -1,0 +1,5 @@
+Block Number;Sub Block Number;Sub Block Type;ID;Question;Type;Answers;Image
+
+1;1;TestSub1;1;file:Questions/testQuestion1.txt;ButtonsImage; 1:Test1, 2:Test2 ; file:Images/test.png
+1;1;TestSub1;2;file:Questions/testQuestion2.txt;ButtonsImage; 1:Test1, 2:Test2, 3:Test3, 4:Test4, 5:Test5 ; file:Images/test2.png
+1;1;TestSub1;1;file:Questions/testQuestion1.txt;ButtonsImage; 1:Test1, 2:Test2, 3:Test3, 4:Test4, 5:test5, 6:Test6, 7:Test7, 8:Test8, 9:Test9, 10:Test10 ; file:Images/test.png

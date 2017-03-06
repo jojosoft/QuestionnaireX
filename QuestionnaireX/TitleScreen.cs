@@ -160,9 +160,14 @@ namespace QuestionnaireX
                     for (int j = 0; j < question.ItemArray.Length; j++)
                     {
                         string dataCell = question.ItemArray[j] as string;
-                        if (dataCell.StartsWith("file:"))
+                        if (dataCell.StartsWith("file:") && currentExperimentInput.Columns[j].ColumnName == "Image")
                         {
-                            // The actual question was swapped out to a file, so try to read it:
+                            // This field contains a reference to an image. Overwrite it with an absolute path that can be used by question forms not knowing about the input file path:
+                            question[j] = lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5);
+                        }
+                        else if (dataCell.StartsWith("file:"))
+                        {
+                            // For all other fields referencing a file, just assume it being a text file which can directly be loaded in:
                             question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5), Encoding.UTF7);
                         }
                     }
@@ -313,6 +318,8 @@ namespace QuestionnaireX
             string result = "";
             Console.WriteLine("Currently showing question of type " + questionForm.GetType().ToString());
             controlPanel.SetCurrentQuestionForm(questionForm);
+            // By default, set TopMost to true for all question forms, otherwise, they could be covered by the control panel...
+            questionForm.TopMost = true;
             questionForm.ShowDialog();
             if (questionForm.DialogResult == DialogResult.OK)
             {

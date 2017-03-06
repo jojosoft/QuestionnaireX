@@ -12,23 +12,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 using FileHelpers;
 
 namespace QuestionnaireX
 {
-    public partial class Buttons : Form
+    public partial class ButtonsImage : Form
     {
         private int selectedID;
         private List<Button> activeButtons;
         
         /// <summary>
         /// Instanciates the form and sets all input values according to the data inside the raw question row.
-        /// For the input file doesn't contain a start value yet, the default value of the main constructor will be used.
         /// </summary>
         /// <param name="rawQuestionData">A row representing the question this question form should display.</param>
-        public Buttons(DataRow rawQuestionData)
-            : this(rawQuestionData["Question"] as string, readAnswers((rawQuestionData["Answers"] as string).Split(',')), readIDs((rawQuestionData["Answers"] as string).Split(',')))
+        public ButtonsImage(DataRow rawQuestionData)
+            : this(rawQuestionData["Question"] as string, readAnswers((rawQuestionData["Answers"] as string).Split(',')), readIDs((rawQuestionData["Answers"] as string).Split(',')), rawQuestionData["Image"] as string)
         { }
         
         /// <summary>
@@ -37,7 +37,8 @@ namespace QuestionnaireX
         /// <param name="question">The question that should be displayed to the user.</param>
         /// <param name="answers">An array with up to ten possible answers.</param>
         /// <param name="ids">An array that provides the corresponding id for each possible answer.</param>
-        public Buttons(string question, string[] answers, int[] ids)
+        /// <param name="image">Either an absolute path to an image file or a base64 encoded image.</param>
+        public ButtonsImage(string question, string[] answers, int[] ids, string image)
         {
             if (answers.Length > 10)
             {
@@ -46,6 +47,8 @@ namespace QuestionnaireX
             InitializeComponent();
             // Display the given question using the rich text box:
             richTextBox1.Text = question;
+            // Load the image either from an absolute path or base64 string.
+            pictureBox1.Image = File.Exists(image) ? Image.FromFile(image) : Base64ToImage(image);
             // Modify buttons and reposition them:
             activeButtons = new List<Button>(10);
             for (int i = 1; i <= 10;  i++)
@@ -63,13 +66,13 @@ namespace QuestionnaireX
                 }
             }
             // Now, align the buttons so they take all the space available:
-            int useWidth = 1160;
+            int useHeight = 554;
             float spacingRatio = 0.052f;
-            int partWidth = useWidth / activeButtons.Count;
+            int partHeight = useHeight / activeButtons.Count;
             for (int i = 0; i < activeButtons.Count; i++)
             {
-                activeButtons[i].Location = new Point((int)Math.Round(15 + partWidth * i + spacingRatio * partWidth / (activeButtons.Count - 1)), activeButtons[i].Location.Y);
-                activeButtons[i].Width = (int)Math.Round(partWidth * (1 - spacingRatio));
+                activeButtons[i].Location = new Point(activeButtons[i].Location.X, (int)Math.Round(225 + partHeight * i + spacingRatio * partHeight / (activeButtons.Count - 1)));
+                activeButtons[i].Height = (int)Math.Round(partHeight * (1 - spacingRatio));
             }
         }
 
@@ -101,6 +104,20 @@ namespace QuestionnaireX
                 ids[i] = int.Parse(input[i].Split(':')[0].Trim());
             }
             return ids;
+        }
+
+        /// <summary>
+        /// A helper function that converts a base64 string into an image.
+        /// </summary>
+        /// <param name="base64String">Your input stream encoded as base64 string.</param>
+        /// <returns>The resulting image.</returns>
+        public Image Base64ToImage(string base64String)
+        {
+            byte[] imageBytes = Convert.FromBase64String(base64String);
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(imageBytes, 0, imageBytes.Length);
+            ms.Write(imageBytes, 0, imageBytes.Length);
+            Image image = Image.FromStream(ms, true);
+            return image;
         }
 
         private void button_Click(object sender, EventArgs e)

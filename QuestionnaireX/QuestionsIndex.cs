@@ -27,7 +27,8 @@ namespace QuestionnaireX
         {
             { "Scale", typeof(Slider) },
             { "Buttons", typeof(Buttons) },
-            { "Instruction", typeof(Instructions) }
+            { "Instruction", typeof(Instructions) },
+            { "ButtonsImage", typeof(ButtonsImage) }
         };
     }
 }
