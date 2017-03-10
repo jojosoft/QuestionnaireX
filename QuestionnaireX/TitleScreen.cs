@@ -127,12 +127,21 @@ namespace QuestionnaireX
                 background.Show();
                 background.SendToBack();
             }
-            // Show the control panel:
-            controlPanel.Show();
+            // Show the control panel at the beginning if the configuration allows it:
+            if (!checkBox4.Checked)
+            {
+                controlPanel.Show();
+            }
             // Iterate through all files the experimenter selected
             PrepareDataTable(ref currentExperimentInput);
             for (int row = 0; row < currentExperimentInput.Rows.Count; row++)
             {
+                // Hide the control panel again at the beginning of each question if the configuration requests it:
+                if (checkBox4.Checked)
+                {
+                    controlPanel.Hide();
+                }
+                // Read in the next question:
                 DataRow question = currentExperimentInput.Rows[row];
                 // Trim all data cells to get rid of any whitespaces before or after the value itself and correct the encoding to UTF-8 for German special chars:
                 for (int i = 0; i < question.ItemArray.Length; i++)
