@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
 
 using FileHelpers;
 
@@ -23,6 +24,15 @@ namespace QuestionnaireX
         private DataTable currentExperimentInput;
         private string lastLoadedInputDirectory;
         private ControlPanel controlPanel = new ControlPanel();
+
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll", EntryPoint = "SendMessage", SetLastError = true)]
+        static extern IntPtr SendMessage(IntPtr hWnd, Int32 Msg, IntPtr wParam, IntPtr lParam);
+
+        const int WM_COMMAND = 0x111;
+        const int MIN_ALL = 419;
+        const int MIN_ALL_UNDO = 416;
 
         public TitleScreen()
         {
@@ -110,12 +120,25 @@ namespace QuestionnaireX
             }
             // Write the header of the output file:
             Directory.CreateDirectory("Output");
-            File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "pID\tpAge\tpGender\tqID\tqBlock\tqSBlock\tqSBType\tqAnswer\ttimestampUTC\tanswerTimeMs");
+            string headerLine = "pID\tpAge\tpGender\tpGroup\tqID\tqBlock\tqSBlock\tqSBType\tqAnswer\ttimestampUTC\tanswerTimeMs";
+            string outputFilePath = "./Output/" + numericUpDown1.Value + ".txt";
+            if (File.Exists(outputFilePath) && new FileInfo(outputFilePath).Length > 0)
+            {
+                File.AppendAllText(outputFilePath, "\r\n" + headerLine);
+            }
+            else
+            {
+                File.AppendAllText(outputFilePath, headerLine);
+            }
             // Start the sequence of questions according to the input file(s) the user loaded beforehand.
             this.Hide();
             // If requested, cover the background with a black form:
             if (checkBox5.Checked)
             {
+                // To prevent any windows (that are opened at the moment) to disturb the questionnaire, minimize them.
+                IntPtr lHwnd = FindWindow("Shell_TrayWnd", null);
+                SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
+                // Then, show the black background:
                 Form background = new Form();
                 background.BackColor = Color.Black;
                 background.FormBorderStyle = FormBorderStyle.None;
@@ -232,7 +255,7 @@ namespace QuestionnaireX
                     this.Close();
                     return;
                 }
-                File.AppendAllText("./Output/" + numericUpDown1.Value + ".txt", "\r\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer + "\t" + ((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString() + "\t" + ((Int32)(DateTime.Now - startTime).TotalMilliseconds).ToString());
+                File.AppendAllText(outputFilePath, "\r\n" + numericUpDown1.Value + "\t" + numericUpDown2.Value + "\t" + (radioButton2.Checked ? "F" : "M") + "\t" + numericUpDown3.Value + "\t" + (question["ID"] as string) + "\t" + (question["Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Number"] as string).Replace('\n', ' ') + "\t" + (question["Sub_Block_Type"] as string).Replace('\n', ' ') + "\t" + answer + "\t" + ((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString() + "\t" + ((Int32)(DateTime.Now - startTime).TotalMilliseconds).ToString());
             }
             controlPanel.SetRunning(false);
             MessageBox.Show("Thank you for participating in this questionnaire!", "Done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
