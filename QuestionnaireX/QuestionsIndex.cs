@@ -25,9 +25,10 @@ namespace QuestionnaireX
         /// </summary>
         public static Dictionary<string, Type> INDEX = new Dictionary<string, Type>()
         {
-            { "Scale", typeof(Slider) },
+            { "Scale", typeof(Scale) },
+            { "ScaleVAS", typeof(ScaleVAS) },
             { "Buttons", typeof(Buttons) },
-            { "Instruction", typeof(Instructions) },
+            { "Instruction", typeof(Instruction) },
             { "ButtonsImage", typeof(ButtonsImage) }
         };
     }

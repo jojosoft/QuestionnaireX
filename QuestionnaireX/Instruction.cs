@@ -17,13 +17,13 @@ using FileHelpers;
 
 namespace QuestionnaireX
 {
-    public partial class Instructions : Form
+    public partial class Instruction : Form
     {
         /// <summary>
         /// Instanciates the form and sets all input values according to the data inside the raw question row.
         /// </summary>
         /// <param name="rawQuestionData">A row representing the instruction that should be displayed to the participant.</param>
-        public Instructions(DataRow rawQuestionData)
+        public Instruction(DataRow rawQuestionData)
             : this(rawQuestionData["Instruction"] as string)
         { }
         
@@ -31,7 +31,7 @@ namespace QuestionnaireX
         /// Instanciates the form and sets all input values according to the given parameters.
         /// </summary>
         /// <param name="text">The instruction that should be displayed to the user.</param>
-        public Instructions(string text)
+        public Instruction(string text)
         {
             InitializeComponent();
             // Display the given instructions using the rich text box:

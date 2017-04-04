@@ -17,15 +17,20 @@ using FileHelpers;
 
 namespace QuestionnaireX
 {
-    public partial class Slider : Form
+    /// <summary>
+    /// VAS stands for Visual Analog Scale.
+    /// The difference to the "Scale" form is that no number of the current value is shown, the scale is always between 0 and 1000 and the return value between 0 and 1.
+    /// Furthermore, the slider component has been optimized for setting the cursor by directly clicking into the control.
+    /// </summary>
+    public partial class ScaleVAS : Form
     {
         /// <summary>
         /// Instanciates the form and sets all input values according to the data inside the raw question row.
         /// For the input file doesn't contain a start value yet, the default value of the main constructor will be used.
         /// </summary>
         /// <param name="rawQuestionData">A row representing the question this question form should display.</param>
-        public Slider(DataRow rawQuestionData)
-            : this(rawQuestionData["Question"] as string, rawQuestionData["Descriptor_Min"] as string, rawQuestionData["Descriptor_Max"] as string, int.Parse(rawQuestionData["Min"] as string), int.Parse(rawQuestionData["Max"] as string))
+        public ScaleVAS(DataRow rawQuestionData)
+            : this(rawQuestionData["Question"] as string, rawQuestionData["Descriptor_Min"] as string, rawQuestionData["Descriptor_Max"] as string, 0, 1000)
         { }
         
         /// <summary>
@@ -36,7 +41,7 @@ namespace QuestionnaireX
         /// <param name="descriptorMax">The description for the user of what the maximum value means.</param>
         /// <param name="minimumSliderValue">The minimum value the user can select using the slider.</param>
         /// <param name="maximumSliderValue">The maximum value the user can select using the slider.</param>
-        public Slider(string question, string descriptorMin, string descriptorMax, int minimumSliderValue, int maximumSliderValue)
+        public ScaleVAS(string question, string descriptorMin, string descriptorMax, int minimumSliderValue, int maximumSliderValue)
         {
             InitializeComponent();
             // Display the given question using the rich text box:
@@ -49,18 +54,15 @@ namespace QuestionnaireX
             trackBar1.Maximum = maximumSliderValue;
             // Set the slider to between the start and end value and update the label the first time:
             trackBar1.Value = minimumSliderValue + (maximumSliderValue - minimumSliderValue) / 2;
-            trackBar1_ValueChanged(this, null);
-        }
-
-        private void trackBar1_ValueChanged(object sender, EventArgs e)
-        {
-            // If the user changed the value of the slider, update the label displaying the value to the user, as well.
-            label1.Text = trackBar1.Value.ToString();
         }
 
         private void trackVolume_MouseDown(object sender, MouseEventArgs e)
         {
-            trackBar1.Value = trackBar1.Minimum + (int)Math.Round(e.X / (float)trackBar1.Width * (trackBar1.Maximum - trackBar1.Minimum));
+            // The width of the track bar gets multiplied by a factor so the cursor jumps exactly where the participant clicked.
+            float factor = 1.03f;
+            int newValue = trackBar1.Minimum + (int)Math.Round((e.X + (float)trackBar1.Width * (1 - factor) / 2) / (float)trackBar1.Width * factor * (trackBar1.Maximum - trackBar1.Minimum));
+            // Limit the new value to the track bar to prevent the setter from throwing an exception when the participant clicked outside the scale range...
+            trackBar1.Value = newValue > trackBar1.Maximum ? trackBar1.Maximum : newValue < trackBar1.Minimum ? trackBar1.Minimum : newValue;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -72,7 +74,7 @@ namespace QuestionnaireX
 
         public override string ToString()
         {
-            return trackBar1.Value.ToString();
+            return (trackBar1.Value / 1000f).ToString(new System.Globalization.CultureInfo("en-US"));
         }
     }
 }

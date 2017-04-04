@@ -80,17 +80,23 @@
     <Compile Include="Buttons.Designer.cs">
       <DependentUpon>Buttons.cs</DependentUpon>
     </Compile>
-    <Compile Include="Instructions.cs">
+    <Compile Include="Instruction.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Instructions.Designer.cs">
-      <DependentUpon>Instructions.cs</DependentUpon>
+    <Compile Include="Instruction.Designer.cs">
+      <DependentUpon>Instruction.cs</DependentUpon>
     </Compile>
-    <Compile Include="Slider.cs">
+    <Compile Include="ScaleVAS.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Slider.Designer.cs">
-      <DependentUpon>Slider.cs</DependentUpon>
+    <Compile Include="ScaleVAS.Designer.cs">
+      <DependentUpon>ScaleVAS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Scale.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Scale.Designer.cs">
+      <DependentUpon>Scale.cs</DependentUpon>
     </Compile>
     <Compile Include="TitleScreen.cs">
       <SubType>Form</SubType>
@@ -122,11 +128,14 @@
     <EmbeddedResource Include="Buttons.resx">
       <DependentUpon>Buttons.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Instructions.resx">
-      <DependentUpon>Instructions.cs</DependentUpon>
+    <EmbeddedResource Include="Instruction.resx">
+      <DependentUpon>Instruction.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Slider.resx">
-      <DependentUpon>Slider.cs</DependentUpon>
+    <EmbeddedResource Include="ScaleVAS.resx">
+      <DependentUpon>ScaleVAS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scale.resx">
+      <DependentUpon>Scale.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TitleScreen.resx">
       <DependentUpon>TitleScreen.cs</DependentUpon>
