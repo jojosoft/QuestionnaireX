@@ -1,0 +1,3 @@
+Block Number;Sub Block Number;Sub Block Type;ID;Question;Type;Descriptor Min;Descriptor Max
+
+1;1;TestS1;1;Test question of type "ScaleVAS"!;ScaleVAS;This doesn't work;This works
