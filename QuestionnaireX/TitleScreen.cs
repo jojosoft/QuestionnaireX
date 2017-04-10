@@ -362,7 +362,8 @@ namespace QuestionnaireX
             {
                 return null;
             }
-            return result;
+            // Make sure to remove line breaks and tabs from the answer, as they would destroy the output file...
+            return result.Replace("\r\n", " ").Replace('\n', ' ').Replace('\t', ' ');
         }
 
         public static string dataFolderPath

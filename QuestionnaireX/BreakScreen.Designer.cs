@@ -65,7 +65,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BreakScreen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "BreakScreen";
+            this.Text = "QuestionnaireX - BreakScreen";
             this.ResumeLayout(false);
             this.PerformLayout();
 

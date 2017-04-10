@@ -22,6 +22,7 @@ namespace QuestionnaireX
         ///     2. Having a constructor that accepts a single FileHelpers.DataRow for parsing the parameters
         ///     3. Overriding the ToString() method for enabling the main logic to get your result
         ///     4. Setting DialogResult to DialogResult.OK and closing your form if the user finished answering
+        /// The main logic will also take care of line breaks and tabs in the string returned by your form and replace them with spaces.
         /// </summary>
         public static Dictionary<string, Type> INDEX = new Dictionary<string, Type>()
         {
@@ -29,7 +30,8 @@ namespace QuestionnaireX
             { "ScaleVAS", typeof(ScaleVAS) },
             { "Buttons", typeof(Buttons) },
             { "Instruction", typeof(Instruction) },
-            { "ButtonsImage", typeof(ButtonsImage) }
+            { "ButtonsImage", typeof(ButtonsImage) },
+            { "Text", typeof(Text) }
         };
     }
 }
