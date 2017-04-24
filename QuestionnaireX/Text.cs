@@ -24,7 +24,7 @@ namespace QuestionnaireX
         /// <summary>
         /// Instanciates the form and sets all input values according to the data inside the raw question row.
         /// </summary>
-        /// <param name="rawQuestionData">A row representing the instruction that should be displayed to the participant.</param>
+        /// <param name="rawQuestionData">A row containing the question that should be displayed to the participant.</param>
         public Text(DataRow rawQuestionData)
             : this(rawQuestionData["Question"] as string)
         { }
@@ -32,7 +32,7 @@ namespace QuestionnaireX
         /// <summary>
         /// Instanciates the form and sets all input values according to the given parameters.
         /// </summary>
-        /// <param name="text">The instruction that should be displayed to the user.</param>
+        /// <param name="text">The question that should be displayed to the user.</param>
         public Text(string text)
         {
             InitializeComponent();
@@ -52,13 +52,14 @@ namespace QuestionnaireX
             else
             {
                 // The participant didn't enter anything!
-                MessageBox.Show("You have not entered something to answer the question. To proceed with the questionnaire, please enter your answer in the lower text box.", "No input!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                // (This is a multilingual error message. The designer lets you edit the corresponding label in all languages, so this statement always uses the right one!)
+                MessageBox.Show(errorNothingEntered.Text.Split(';')[1], errorNothingEntered.Text.Split(';')[0], MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
         public override string ToString()
         {
-            // For this simple form, the result is always the same: The user pressed the button and confirmed that they understood the instruction.
+            // Return the text entered by the participant at the time they pressed the submit button.
             return userText;
         }
     }

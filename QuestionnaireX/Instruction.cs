@@ -34,7 +34,7 @@ namespace QuestionnaireX
         public Instruction(string text)
         {
             InitializeComponent();
-            // Display the given instructions using the rich text box:
+            // Display the given instruction using the rich text box:
             richTextBox1.Text = text;
         }
         

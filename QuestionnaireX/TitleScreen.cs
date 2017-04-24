@@ -65,6 +65,8 @@ namespace QuestionnaireX
                 }
                 catch { }
             }
+            // Automatically select the first language, so the combobox is never null!
+            comboBox1.SelectedIndex = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -132,6 +134,13 @@ namespace QuestionnaireX
             }
             // Start the sequence of questions according to the input file(s) the user loaded beforehand.
             this.Hide();
+            // Set the chosen language, so all question forms are displayed correctly.
+            Dictionary<string, string> usedCultureIDs = new Dictionary<string, string>()
+            {
+                { "English", "en" },
+                { "German", "de" }
+            };
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(usedCultureIDs[comboBox1.SelectedItem as string]);
             // If requested, cover the background with a black form:
             if (checkBox5.Checked)
             {
