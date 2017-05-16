@@ -250,7 +250,7 @@ namespace QuestionnaireX
                     catch (Exception ex)
                     {
                         answer = null;
-                        MessageBox.Show("The question form with type " + question["Type"].ToString() + " couldn't be instantiated!\nPlease make sure you've added your new question form to the questions index and read the comments in that class file.\n\nException message:\n" + ex.Message, "Problem with creating question", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("The question form with type " + question["Type"].ToString() + " couldn't be instantiated!\nPlease make sure you've added your new question form to the questions index and read the comments in that class file.\n\nException message:\n" + (ex is System.Reflection.TargetInvocationException ? ex.InnerException.Message : ex.Message), "Problem with creating question", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     if (answer == "" && checkBox4.Checked && !controlPanel.Visible && MessageBox.Show("The control panel needs to be hidden during the questioning.\nAre you the experimenter AND do you want to show the control panel?", "Show control panel?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {

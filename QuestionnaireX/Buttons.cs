@@ -43,6 +43,10 @@ namespace QuestionnaireX
             {
                 throw new Exception("You specified more than ten answers, but this question form is only capable of displaying at maximum ten buttons.");
             }
+            else if (answers.Length <= 1)
+            {
+                throw new Exception("You need to provide at least two possible answers! Use the question type 'Instruction' for displaying text with one answer button to the participant.");
+            }
             InitializeComponent();
             // Display the given question using the rich text box:
             richTextBox1.Text = question;
