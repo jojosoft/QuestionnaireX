@@ -79,7 +79,18 @@ namespace QuestionnaireX
             {
                 try
                 {
-                    // Try to read from the given input file:
+                    /* CsvEngine expects at least one data item per row or an empty row.
+                     * Excel saves out a line only containing semicolons to represent an empty row.
+                     * To fix this problem an make QuestionnaireX directly compatible with Excel, empty those lines.
+                    */
+                    string[] contents = File.ReadAllLines(dlg.FileName);
+                    List<int> problematicLines = FindAllRowsOnlyContainingSmicolons(contents);
+                    if (problematicLines.Count > 0)
+                    {
+                        problematicLines.ForEach(lineIndex => contents[lineIndex] = "");
+                        File.WriteAllLines(dlg.FileName, contents);
+                    }
+                    // Now try to read from the given input file:
                     currentExperimentInput = CsvEngine.CsvToDataTable(dlg.FileName, ';');
                     lastLoadedInputDirectory = Path.GetDirectoryName(dlg.FileName);
                     MessageBox.Show("Successfully loaded the input file named:\n" + Path.GetFileName(dlg.FileName), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -270,6 +281,20 @@ namespace QuestionnaireX
             MessageBox.Show("Thank you for participating in this questionnaire!", "Done!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             controlPanel.Close();
             this.Close();
+        }
+
+        private List<int> FindAllRowsOnlyContainingSmicolons(string[] rows)
+        {
+            List<int> rowsFound = new List<int>();
+            for (int i = 0; i < rows.Length; i++)
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(rows[i], "^;*$"))
+                {
+                    // This row only consists of semicolons, so add it to the list.
+                    rowsFound.Add(i);
+                }
+            }
+            return rowsFound;
         }
 
         private List<CheckBox> GetAllCheckboxes()
