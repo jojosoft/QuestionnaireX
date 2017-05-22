@@ -83,12 +83,23 @@ namespace QuestionnaireX
                      * Excel saves out a line only containing semicolons to represent an empty row.
                      * To fix this problem an make QuestionnaireX directly compatible with Excel, empty those lines.
                     */
-                    string[] contents = File.ReadAllLines(dlg.FileName);
+                    string[] contents = File.ReadAllLines(dlg.FileName, Encoding.Default);
                     List<int> problematicLines = FindAllRowsOnlyContainingSmicolons(contents);
                     if (problematicLines.Count > 0)
                     {
+                        // Empty the problematic lines.
                         problematicLines.ForEach(lineIndex => contents[lineIndex] = "");
-                        File.WriteAllLines(dlg.FileName, contents);
+                        // Get the file's encoding:
+                        bool utf8 = ContainsUnicodeCharacter(String.Join("", contents));
+                        // Convert all lines into the correct encoding, otherwise we may destroy the old encoding!
+                        if (utf8)
+                        {
+                            for (int i = 0; i < contents.Length; i++)
+                            {
+                                contents[i] = Encoding.UTF8.GetString(Encoding.Default.GetBytes(contents[i]));
+                            }
+                        }
+                        File.WriteAllLines(dlg.FileName, contents, utf8 ? new UTF8Encoding(false) : Encoding.Default);
                     }
                     // Now try to read from the given input file:
                     currentExperimentInput = CsvEngine.CsvToDataTable(dlg.FileName, ';');
@@ -186,10 +197,11 @@ namespace QuestionnaireX
                 }
                 // Read in the next question:
                 DataRow question = currentExperimentInput.Rows[row];
-                // Trim all data cells to get rid of any whitespaces before or after the value itself and correct the encoding to UTF-8 for German special chars:
+                // Trim all data cells to get rid of any whitespaces before or after the value itself and correct the encoding to UTF-8 if needed:
                 for (int i = 0; i < question.ItemArray.Length; i++)
                 {
-                    question[i] = Encoding.UTF8.GetString(Encoding.Default.GetBytes((question[i] as string).Trim()));
+                    string cell = (question[i] as string).Trim();
+                    question[i] = ContainsUnicodeCharacter(cell) ? Encoding.UTF8.GetString(Encoding.Default.GetBytes(cell)) : cell;
                 }
                 // If randomization of sub-blocks is enabled, detect the start of a new sub-block and randomize it!
                 bool newSubBlock = row == 0 || !GetFieldOfRow(row - 1, "Sub_Block_Number").Equals(question["Sub_Block_Number"] as string);
@@ -220,7 +232,13 @@ namespace QuestionnaireX
                         else if (dataCell.StartsWith("file:"))
                         {
                             // For all other fields referencing a file, just assume it being a text file which can directly be loaded in:
-                            question[j] = System.IO.File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5), Encoding.UTF7);
+                            string fileContents = File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5), Encoding.Default);
+                            if (ContainsUnicodeCharacter(fileContents))
+                            {
+                                // The file is not ANSI encoded, therefore interpret its contents as UTF-8:
+                                fileContents = Encoding.UTF8.GetString(Encoding.Default.GetBytes(fileContents));
+                            }
+                            question[j] = fileContents;
                         }
                     }
                 }
@@ -398,6 +416,12 @@ namespace QuestionnaireX
             }
             // Make sure to remove line breaks and tabs from the answer, as they would destroy the output file...
             return result.Replace("\r\n", " ").Replace('\n', ' ').Replace('\t', ' ');
+        }
+
+        private bool ContainsUnicodeCharacter(string input)
+        {
+            const int MaxAnsiCode = 255;
+            return input.Any(c => c > MaxAnsiCode);
         }
 
         public static string dataFolderPath
