@@ -240,6 +240,11 @@ namespace QuestionnaireX
                             }
                             question[j] = fileContents;
                         }
+                        else if (currentExperimentInput.Columns[j].ColumnName == "Question")
+                        {
+                            // A question field not referencing a file must be an inline question. Replace the %newline% marker for inline questions by a real \r\n!
+                            question[j] = dataCell.Replace("%newline%", "\r\n");
+                        }
                     }
                 }
                 catch (Exception ex)
