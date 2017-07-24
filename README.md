@@ -17,3 +17,5 @@ The following question types have already been implemented until now:
  Below a given question, there can be shown between 1 and 10 buttons with individual labels. The return value is the button ID from the input file which the participant does not see. Right next to the buttons, an image with at maximum 767 pixels height and width can be displayed for each question. Larger images will be scaled down.
 
 **All input and question files must be encoded using either Windows-1252 (Notepad++ calls it "ANSI") or UTF-8!**
+
+As long as you save out the input file in **semicolon-delimited** CSV format, you can even use Excel for creating and editing it, which makes it much easier to keep track of which data cell belongs to which column.
