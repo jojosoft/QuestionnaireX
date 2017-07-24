@@ -18,4 +18,4 @@ The following question types have already been implemented until now:
 
 **All input and question files must be encoded using either Windows-1252 (Notepad++ calls it "ANSI") or UTF-8!**
 
-As long as you save out the input file in **semicolon-delimited** CSV format, you can even use Excel for creating and editing it, which makes it much easier to keep track of which data cell belongs to which column.
+As long as you save out the input file in **semicolon-delimited** CSV format, you can for example even use Excel for creating and editing it, which makes it much easier to keep track of which data cell belongs to which column. To tell Windows that data cells should be delimited by semicolons, make sure the field "List separator" under "Region and Language"->"Additional settings..." is set to a semicolon.
