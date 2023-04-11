@@ -1,2 +1,0 @@
-This is test question number one!
-Type: "Text", please enter some text.

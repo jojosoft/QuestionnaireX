@@ -1,9 +1,0 @@
-ID;Block Number;Sub Block Number;Sub Block Type;Question;Type;Min;Max;Descriptor Min;Descriptor Max
-1;1;1;A;file:Questions/1_1.txt;Scale;1;10;Strong Disagreement;Strong Agreement
-2;1;1;A;file:Questions/1_2.txt;Scale;1;10;Strong Disagreement;Strong Agreement
-3;1;1;A;file:Questions/1_3.txt;Scale;1;10;Strong Disagreement;Strong Agreement
-4;1;1;A;file:Questions/1_4.txt;Scale;1;10;Strong Disagreement;Strong Agreement
-5;1;1;A;file:Questions/1_5.txt;Scale;1;10;Strong Disagreement;Strong Agreement
-6;1;1;A;file:Questions/1_6.txt;Scale;1;10;Strong Disagreement;Strong Agreement
-7;1;1;A;file:Questions/1_7.txt;Scale;1;10;Strong Disagreement;Strong Agreement
-8;1;1;A;file:Questions/1_8.txt;Scale;1;10;Strong Disagreement;Strong Agreement
