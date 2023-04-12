@@ -224,12 +224,12 @@ namespace QuestionnaireX
                     for (int j = 0; j < question.ItemArray.Length; j++)
                     {
                         string dataCell = question.ItemArray[j] as string;
-                        if (dataCell.StartsWith("file:") && currentExperimentInput.Columns[j].ColumnName == "Image")
+                        if (dataCell.Trim().StartsWith("file:") && currentExperimentInput.Columns[j].ColumnName == "Image")
                         {
                             // This field contains a reference to an image. Overwrite it with an absolute path that can be used by question forms not knowing about the input file path:
                             question[j] = lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5);
                         }
-                        else if (dataCell.StartsWith("file:"))
+                        else if (dataCell.Trim().StartsWith("file:"))
                         {
                             // For all other fields referencing a file, just assume it being a text file which can directly be loaded in:
                             string fileContents = File.ReadAllText(lastLoadedInputDirectory + Path.DirectorySeparatorChar + dataCell.Substring(5), Encoding.Default);
