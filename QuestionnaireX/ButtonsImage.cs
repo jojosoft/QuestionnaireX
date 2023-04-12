@@ -32,7 +32,7 @@ namespace QuestionnaireX
         { }
         
         /// <summary>
-        /// Instanciates the form and sets all input values according to the given parameters.
+        /// Instantiates the form and sets all input values according to the given parameters.
         /// </summary>
         /// <param name="question">The question that should be displayed to the user.</param>
         /// <param name="answers">An array with up to ten possible answers.</param>
@@ -70,13 +70,14 @@ namespace QuestionnaireX
                 }
             }
             // Now, align the buttons so they take all the space available:
-            int useHeight = 554;
-            float spacingRatio = 0.052f;
+            int startHeight = activeButtons.First().Location.Y;
+            int useHeight = this.ClientSize.Height - startHeight;
+            float spacingRatio = 0.05f;
             int partHeight = useHeight / activeButtons.Count;
             for (int i = 0; i < activeButtons.Count; i++)
             {
-                activeButtons[i].Location = new Point(activeButtons[i].Location.X, (int)Math.Round(225 + partHeight * i + spacingRatio * partHeight / (activeButtons.Count - 1)));
-                activeButtons[i].Height = (int)Math.Round(partHeight * (1 - spacingRatio));
+                activeButtons[i].Location = new Point(activeButtons[i].Location.X, startHeight + partHeight * i);
+                activeButtons[i].Height = (int)Math.Round(partHeight - partHeight * spacingRatio);
             }
         }
 
@@ -136,5 +137,5 @@ namespace QuestionnaireX
         {
             return selectedID.ToString();
         }
-    }
+	}
 }

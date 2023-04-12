@@ -67,13 +67,14 @@ namespace QuestionnaireX
                 }
             }
             // Now, align the buttons so they take all the space available:
-            int useWidth = 1160;
-            float spacingRatio = 0.052f;
+            int startWidth = activeButtons.First().Location.X;
+            int useWidth = this.ClientSize.Width - startWidth;
+            float spacingRatio = 0.05f;
             int partWidth = useWidth / activeButtons.Count;
             for (int i = 0; i < activeButtons.Count; i++)
             {
-                activeButtons[i].Location = new Point((int)Math.Round(15 + partWidth * i + spacingRatio * partWidth / (activeButtons.Count - 1)), activeButtons[i].Location.Y);
-                activeButtons[i].Width = (int)Math.Round(partWidth * (1 - spacingRatio));
+                activeButtons[i].Location = new Point(startWidth + partWidth * i, activeButtons[i].Location.Y);
+                activeButtons[i].Width = (int)Math.Round(partWidth - partWidth * spacingRatio);
             }
         }
 
