@@ -206,7 +206,7 @@ namespace QuestionnaireX
                 // If randomization of sub-blocks is enabled, detect the start of a new sub-block and randomize it!
                 bool newSubBlock = row == 0 || !GetFieldOfRow(row - 1, "Sub_Block_Number").Equals(question["Sub_Block_Number"] as string);
                 bool newBlock = row == 0 || !GetFieldOfRow(row - 1, "Block_Number").Equals(question["Block_Number"] as string);
-                if (checkBox1.Checked && newSubBlock)
+                if (currentExperimentInput.Rows.Count > 1 && newSubBlock && checkBox1.Checked)
                 {
                     // The current row is either the first row of the file or the first row of a new sub-block. Randomize it!
                     DataRow[] subBlock = currentExperimentInput.Select("Sub_Block_Number = '" + GetFieldOfRow(row + 1, "Sub_Block_Number") + "' AND Block_Number = '" + GetFieldOfRow(row + 1, "Block_Number") + "'");
